@@ -13,8 +13,8 @@
     "@foton/editor": "workspace:*",
     "@foton/ui": "workspace:*",
     "next": "16.4.2",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@foton/config": "workspace:*",

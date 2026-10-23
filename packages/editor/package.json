@@ -24,8 +24,8 @@
     "@foton/config": "workspace:*",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "typescript": "^5"
   }
 }
