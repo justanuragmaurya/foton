@@ -1,0 +1,18 @@
+/* Foton design tokens. Tailwind exposes each as a utility (bg-panel, text-ink, border-line…).
+   The palette is deliberately our own: cool blue-greys with a single accent. */
+@theme {
+  --color-chrome: #16171a;
+  --color-panel: #1f2125;
+  --color-panel-raised: #292c31;
+  --color-panel-hover: #31353b;
+  --color-line: #34383f;
+  --color-ink: #d9dbe0;
+  --color-ink-muted: #8d929b;
+  --color-ink-faint: #5d626b;
+  --color-accent: #5b8cff;
+  --color-accent-strong: #3f74f0;
+  --color-danger: #f26b5b;
+
+  --font-ui: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}

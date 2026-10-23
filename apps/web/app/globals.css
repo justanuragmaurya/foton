@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "@foton/ui/theme.css";
+
+@source "../../../packages/editor/src";
+
+html,
+body {
+  height: 100%;
+  background: var(--color-chrome);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+}

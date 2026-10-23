@@ -1,0 +1,4 @@
+# Stable for now; WASM threads (atomics + build-std) will move this to a pinned nightly in Phase 1.
+[toolchain]
+channel = "1.98.1"
+targets = ["wasm32-unknown-unknown"]

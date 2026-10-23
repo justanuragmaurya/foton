@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Foton
 
-## Getting Started
+Foton is a layered image editor that runs in the browser. It renders with a Rust/WASM engine on WebGPU, falling back to WebGL2, and its AI features run on the device.
 
-First, run the development server:
+## Layout
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+apps/web          Next.js 16 app: landing page and /edit (client-only editor mount)
+packages/editor   React editor shell: menus, options bar, tools, dockable panels, shortcuts
+packages/engine   Typed client for the engine worker (commands in, snapshots out)
+packages/ui       Design tokens (Tailwind @theme)
+packages/config   Shared tsconfig
+crates/foton-core     Document model, Command enum, undo history with gestures
+crates/foton-render   wgpu compositor (all blend modes in WGSL) and viewport presenter
+crates/foton-wasm     wasm-bindgen entry that runs inside the worker on an OffscreenCanvas
+scripts/build-wasm.mjs  Builds the engine and emits content-hashed glue and .wasm into apps/web/public/engine
+e2e/              Playwright tests
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How an edit flows
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. A tool, menu or shortcut calls an action in `packages/editor/src/actions.ts`.
+2. The action sends a serializable `Command` (for example `{ type: "layer.add" }`) through `EngineClient`.
+3. The engine worker applies it in Rust (`Editor::dispatch`), records history, re-composites on the GPU, and posts back a `Snapshot`.
+4. The panels re-render from that snapshot.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Commands are the single source of truth, so the same mechanism will drive actions recording, the AI agent and collaboration. Drags and slider scrubs are wrapped in `beginGesture`/`endGesture`, so each one becomes a single history state.
 
-## Learn More
+## Development
 
-To learn more about Next.js, take a look at the following resources:
+You need Node 24 with pnpm, Rust (pinned by `rust-toolchain.toml`, wasm32 target included), and the `wasm-bindgen` CLI at the same version as the crate:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```sh
+cargo install wasm-bindgen-cli --version 0.2.129 --locked
+pnpm install
+pnpm dev              # builds the engine (release), then starts Next on :3000
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+After changing Rust code, run `pnpm build:wasm` (add `--dev` for a fast debug build) and reload the page.
 
-## Deploy on Vercel
+| Check | Command |
+| --- | --- |
+| Rust unit and GPU tests (the compositor runs on your real GPU) | `pnpm test:rust` |
+| Typecheck | `pnpm typecheck` |
+| Lint | `pnpm lint` |
+| End-to-end (Playwright, headless WebGPU) | `pnpm test:e2e` |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The app is served with COOP/COEP headers (`apps/web/next.config.ts`), so `crossOriginIsolated` is true. Any cross-origin asset, such as a model CDN, must send CORP/CORS headers.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The full product plan and roadmap are tracked separately. Phase 0 (foundations) is what's in this repository today.

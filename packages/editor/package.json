@@ -1,0 +1,31 @@
+{
+  "name": "@foton/editor",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "dependencies": {
+    "@foton/engine": "workspace:*",
+    "dockview-react": "^8.6.1",
+    "lucide-react": "^1.61.0",
+    "zustand": "^5.0.16"
+  },
+  "devDependencies": {
+    "@foton/config": "workspace:*",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "^5"
+  }
+}

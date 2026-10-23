@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      # Toolchain and wasm32 target come from rust-toolchain.toml.
+      - run: rustup show active-toolchain || rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-bindgen@0.2.129
+
+      # Lavapipe gives the headless runner a software Vulkan adapter, so the GPU compositor tests run.
+      - run: sudo apt-get update && sudo apt-get install -y mesa-vulkan-drivers
+
+      - run: pnpm install --frozen-lockfile
+      - run: cargo test --workspace
+      - run: pnpm build:wasm
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm --filter @foton/web build
+
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/

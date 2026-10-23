@@ -1,0 +1,4 @@
+{
+  "extends": "@foton/config/tsconfig.base.json",
+  "include": ["src"]
+}

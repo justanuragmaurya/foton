@@ -1,0 +1,5 @@
+{
+  "extends": "@foton/config/tsconfig.base.json",
+  "compilerOptions": { "lib": ["esnext", "dom", "webworker"], "allowJs": true },
+  "include": ["src", "pkg"]
+}
